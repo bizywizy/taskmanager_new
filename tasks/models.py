@@ -12,6 +12,7 @@ class TaskQuerySet(models.QuerySet):
     def undone(self):
         return self.filter(done__isnull=False)
 
+
 def last_plus_1():
     last_task = Task.objects.order_by('-position').first()
     if not last_task:
@@ -32,16 +33,18 @@ class Task(models.Model):
             return None
         return type(self).objects.get(pk=self.pk)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
         self._handle_position()
         super().save(force_insert, force_update, using, update_fields)
 
     def _validate_position(self):
         if self.position < 0 or self.position >= last_plus_1():
-            raise ValidationError('Can\'t cross boundary positions')            
+            raise ValidationError('Can\'t cross boundary positions')
 
     def _is_need_to_move(self):
-        if not self.actual_state or self.actual_state.position == self.position:
+        if (not self.actual_state or
+                self.actual_state.position == self.position):
             return False
         return True
 
@@ -58,7 +61,7 @@ class Task(models.Model):
         if self._is_need_to_move():
             self._validate_position()
             self._update_other_positions()
-    
+
     def delete(self, using=None, keep_parents=False):
         self.position = None
         self._update_other_positions()

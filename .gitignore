@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+frontend/dist/js/bundle.js
+frontend/node_modules/
+db.sqlite3
+venv/
+*.pyc
